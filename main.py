@@ -1,11 +1,12 @@
-import os
-
-import numpy as np
-
-from PIL import Image
-import glob
 from sklearn.neighbors import KNeighborsClassifier
-import pickle
+from sklearn.model_selection import train_test_split
+from imutils import paths
+import numpy as np
+import argparse
+import imutils
+import cv2
+import os
+import glob
 
 """
 import tensorflow as tf
@@ -28,46 +29,39 @@ def V3LargePredict(img, IMAGE_SHAPE):
     """
 
 
-def KNN(train, train_labels, test, test_true_labels, k):
+def image_to_feature_vector(image, size=(450, 450)):
+    # resize the image to a fixed size, then flatten the image into
+    # a list of raw pixel intensities
+    return cv2.resize(image, size).flatten()
+
+
+def KNN(train_set, train_labels, test_set, test_true_labels, k):
     classifier = KNeighborsClassifier(n_neighbors=k)
     classifier.fit(train, train_labels)
     results = classifier.score(test, test_true_labels)
     print("mean accuracy :" + str(results))
 
 
-def _createTrainSet(path, l, labels, label):
-    for filename in glob.glob(path + '/*.jpg'):  # assuming gif
-        im = Image.open(filename)
-        im = np.array(im,dtype=int)
-        im.reshape(-1, 1)
-        l.append(im)
-        labels.append(label)
-
-
-def createTrainSet(set, labels):
-    subdirs = [x[0] for x in os.walk('train_images/')]
-    print(subdirs)
-
-    for i in range(1, len(subdirs)):
-        _createTrainSet(subdirs[i], set, labels, i)
-
-
-def createTestSet(l):
-    for filename in glob.glob('test_images' + '/*.jpg'):
-        im = Image.open(filename)
-        im = np.array(im,dtype=int)
-        im.reshape(-1, 1)
-        l.append(im)
-        print('test: ' + filename + 'salvato')
-
-
 if __name__ == '__main__':
+    test = []
     train = []
     train_labels = []
-    test = []
+    test_true_labels = [2, 1, 1]
+    for filename in glob.glob('Test_images/' + '*jpg'):
+        img = cv2.imread(filename)
+        img = image_to_feature_vector(img)
+        test.append(img)
 
-    createTrainSet(train, train_labels)
-    createTestSet(test)
-    test_true_labels = [3, 1, 1]
+    for filename in glob.glob('train_images/calco/' + '*jpg'):
+        img = cv2.imread(filename)
+        img = image_to_feature_vector(img)
+        train.append(img)
+
+    for i in range(0, len(train)):
+        train_labels.append(1)
 
     KNN(train, train_labels, test, test_true_labels, 3)
+
+
+    # links : https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html ,
+    #         https://pyimagesearch.com/2016/08/08/k-nn-classifier-for-image-classification/
