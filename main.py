@@ -46,7 +46,7 @@ if __name__ == '__main__':
     test = []
     train = []
     train_labels = []
-    test_true_labels = [2, 1, 1]
+    test_true_labels = []
     for filename in glob.glob('Test_images/' + '*jpg'):
         img = cv2.imread(filename)
         img = image_to_feature_vector(img)
@@ -56,6 +56,7 @@ if __name__ == '__main__':
         img = cv2.imread(filename)
         img = image_to_feature_vector(img)
         train.append(img)
+
 
     for i in range(0, len(train)):
         train_labels.append(1)
