@@ -39,7 +39,7 @@ def KNN(train_set, train_labels, test_set, test_true_labels, k):
     classifier = KNeighborsClassifier(n_neighbors=k)
     classifier.fit(train, train_labels)
     results = classifier.score(test, test_true_labels)
-    print("mean accuracy :" + str(results))
+    print("mean accuracy :" + str(results)+ ' con k = ' + str(k))
 
 
 if __name__ == '__main__':
@@ -51,18 +51,28 @@ if __name__ == '__main__':
         img = cv2.imread(filename)
         img = image_to_feature_vector(img)
         test.append(img)
+        if 'autore' in filename:
+            test_true_labels.append(1)
+
+        elif 'partir' in filename:
+            test_true_labels.append(2)
+
+        else:
+            test_true_labels.append(0)
 
     for filename in glob.glob('train_images/calco/' + '*jpg'):
         img = cv2.imread(filename)
         img = image_to_feature_vector(img)
         train.append(img)
+        if 'autore' in filename:
+            train_labels.append(1)
+        elif 'partir' in filename:
+            train_labels.append(2)
+
+    print("len di test :" + str(len(test)))
 
 
-    for i in range(0, len(train)):
-        train_labels.append(1)
-
-    KNN(train, train_labels, test, test_true_labels, 3)
-
+    KNN(train, train_labels, test, test_true_labels, 10)
 
     # links : https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html ,
     #         https://pyimagesearch.com/2016/08/08/k-nn-classifier-for-image-classification/
