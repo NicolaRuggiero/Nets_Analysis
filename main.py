@@ -37,8 +37,19 @@ def image_to_feature_vector(image):
 
 def KNN(train_set, train_labels, test_set, test_true_labels, k):
     classifier = KNeighborsClassifier(n_neighbors=k, )
-    classifier.fit(train_set, train_labels)
-    results = classifier.score(test_set, test_true_labels)
+
+    train_set = np.array(train_set)
+    print('shape of train_set :' + train_set.shape)
+    nsamples, nx, ny = train_set.shape
+    d2_train_set = train_set.reshape((nsamples, nx * ny))
+
+    test_set = np.array(test_set)
+    print('shape of test_set :' + test_set.shape)
+    nsamples, nx, ny = test_set.shape
+    d2_test_set = test_set.reshape((nsamples, nx * ny))
+
+    classifier.fit(d2_train_set, train_labels)
+    results = classifier.score(d2_test_set, test_true_labels)
     print("mean accuracy :" + str(results) + ' con k = ' + str(k))
 
 
