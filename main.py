@@ -39,7 +39,7 @@ def KNN(train_set, train_labels, test_set, test_true_labels, k):
     classifier = KNeighborsClassifier(n_neighbors=k)
     classifier.fit(train, train_labels)
     results = classifier.score(test, test_true_labels)
-    print("mean accuracy :" + str(results)+ ' con k = ' + str(k))
+    print("mean accuracy :" + str(results) + ' con k = ' + str(k))
 
 
 if __name__ == '__main__':
@@ -47,6 +47,7 @@ if __name__ == '__main__':
     train = []
     train_labels = []
     test_true_labels = []
+    k_values = [2, 3, 5, 7, 10]
     for filename in glob.glob('Test_images/' + '*jpg'):
         img = cv2.imread(filename)
         img = image_to_feature_vector(img)
@@ -60,6 +61,15 @@ if __name__ == '__main__':
         else:
             test_true_labels.append(0)
 
+    for filename in glob.glob('train_images/partir/' + '*jpg'):
+        img = cv2.imread(filename)
+        img = image_to_feature_vector(img)
+        train.append(img)
+        if 'autore' in filename:
+            train_labels.append(1)
+        elif 'partir' in filename:
+            train_labels.append(2)
+
     for filename in glob.glob('train_images/calco/' + '*jpg'):
         img = cv2.imread(filename)
         img = image_to_feature_vector(img)
@@ -71,8 +81,8 @@ if __name__ == '__main__':
 
     print("len di test :" + str(len(test)))
 
-
-    KNN(train, train_labels, test, test_true_labels, 10)
+    for i in range(0, len(k_values)):
+        KNN(train, train_labels, test, test_true_labels, k_values[i])
 
     # links : https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html ,
     #         https://pyimagesearch.com/2016/08/08/k-nn-classifier-for-image-classification/
