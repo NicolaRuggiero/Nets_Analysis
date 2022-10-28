@@ -15,8 +15,7 @@ import tensorflow_hub as hub
 
 def V3LargePredict(img, IMAGE_SHAPE=(224, 224)):
     model = tf.keras.Sequential([
-        hub.KerasLayer("https://tfhub.dev/google/imagenet/mobilenet_v3_large_075_224/classification/5",
-                       trainable=True, arguments=dict(batch_norm_momentum=0.997))
+        hub.KerasLayer("https://tfhub.dev/google/imagenet/mobilenet_v3_large_075_224/classification/5")
     ])
     model.build([None, 224, 224, 3])
     img = img.resize(IMAGE_SHAPE)
@@ -36,15 +35,15 @@ def image_to_feature_vector(image):
 
 
 def KNN(train_set, train_labels, test_set, test_true_labels, k):
-    classifier = KNeighborsClassifier(n_neighbors=k, )
+    classifier = KNeighborsClassifier(n_neighbors=k )
 
     train_set = np.array(train_set)
-    print('shape of train_set :' + train_set.shape)
+    #print('shape of train_set :' + str(train_set.shape))
     nsamples, nx, ny = train_set.shape
     d2_train_set = train_set.reshape((nsamples, nx * ny))
 
     test_set = np.array(test_set)
-    print('shape of test_set :' + test_set.shape)
+    #print('shape of test_set :' + str(test_set.shape))
     nsamples, nx, ny = test_set.shape
     d2_test_set = test_set.reshape((nsamples, nx * ny))
 
@@ -73,7 +72,7 @@ if __name__ == '__main__':
             test_true_labels.append(0)
 
     print('Done Test')
-    """
+
     for filename in glob.glob('train_images/partir/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
@@ -83,7 +82,7 @@ if __name__ == '__main__':
         elif 'partir' in filename:
             train_labels.append(2)
     print('Done Train,partir')
-    """
+
     for filename in glob.glob('train_images/calco/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
