@@ -104,3 +104,5 @@ if __name__ == '__main__':
 
     # links : https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html ,
     #         https://pyimagesearch.com/2016/08/08/k-nn-classifier-for-image-classification/
+    # reti :  efficient ,https://tfhub.dev/tensorflow/efficientnet/lite4/classification/2
+    #         V3large, https://tfhub.dev/google/imagenet/mobilenet_v3_large_075_224/classification/5
