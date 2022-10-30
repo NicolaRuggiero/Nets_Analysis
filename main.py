@@ -8,7 +8,7 @@ import cv2
 import os
 import glob
 from PIL import Image
-
+import pickle
 import tensorflow as tf
 import tensorflow_hub as hub
 
@@ -19,7 +19,7 @@ def V3LargePredict(img, IMAGE_SHAPE=(224, 224)):
     ])
     model.build([None, 224, 224, 3])
     img = img.resize(IMAGE_SHAPE)
-    img = np.array(img)
+    img = np.array(img)/255
 
     result = model.predict(img[np.newaxis, ...])
 
@@ -99,6 +99,8 @@ if __name__ == '__main__':
 
     for i in range(0, len(k_values)):
         KNN(train, train_labels, test, test_true_labels, k_values[i])
+
+    pickle.dump(open(train,'train_dataset.p','wb'))
 
     # links : https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html ,
     #         https://pyimagesearch.com/2016/08/08/k-nn-classifier-for-image-classification/
