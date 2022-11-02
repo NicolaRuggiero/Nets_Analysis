@@ -1,3 +1,5 @@
+import sys
+
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from imutils import paths
@@ -53,7 +55,10 @@ def distanceDataset(train_set, arr):
     results = []
     for i in range(0, len(train_set)):
         d = np.linalg.norm(arr - train_set[i])
-        results.append(d)
+        if (d < 90.0):
+            results.append(d)
+        else:
+            results.append(sys.maxsize)
     return results
 
 
@@ -72,16 +77,16 @@ def knn_byhand(train_set, train_labels, test_set, test_true_labels, k):
     results = []
     for i in range(0, len(test_set)):
         d = distanceDataset(train_set, test_set[i])
-        print('img : ' + str(i))
-        print('distanze: ' + str(d))
+        #print('img : ' + str(i))
+        #print('distanze: ' + str(d))
         k_labels_index = np.argpartition(d, k)
         k_labels_index = k_labels_index[0:k]
-        print('k_labels_index :' + str(k_labels_index))
+        #print('k_labels_index :' + str(k_labels_index))
         k_labels = find_k_labels(k_labels_index, train_labels)
-        print('k_labels:' + str(k_labels))
+        #print('k_labels:' + str(k_labels))
         w = most_frequent(k_labels)
-        print('w' + str(w))
-        print('test_true_label ' + str(test_true_labels[i]))
+        #print('w' + str(w))
+        #print('test_true_label ' + str(test_true_labels[i]))
 
         if (w == test_true_labels[i]):
             results.append(1)
@@ -117,7 +122,7 @@ if __name__ == '__main__':
     train_labels = []
     test_true_labels = []
     k_values = [2, 3, 5, 7, 10, 20, 50]
-    for filename in glob.glob('testKNN/test/' + '*jpg'):
+    for filename in glob.glob('Test_images/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         test.append(img)
@@ -174,7 +179,7 @@ if __name__ == '__main__':
         else:
             train_labels.append(0)
     print('Done Train,calco')
-    """
+    
     for filename in glob.glob('testKNN/train/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
@@ -192,8 +197,9 @@ if __name__ == '__main__':
 
         else:
             train_labels.append(0)
-
-
+    """
+    train = pickle.load(open('train_dataset_efficient.p','rb'))
+    train_labels = pickle.load(open('train_labels.p', 'rb'))
     print('len di train_dataset = ' + str(len(train)))
     print('len di train_dataset_labels = ' + str(len(train_labels)))
     for i in range(0, len(k_values)):
