@@ -75,6 +75,7 @@ def knn_byhand(train_set, train_labels, test_set, test_true_labels, k):
         print('img : ' + str(i))
         print('distanze: ' + str(d))
         k_labels_index = np.argpartition(d, k)
+        k_labels_index = k_labels_index[0:k]
         print('k_labels_index :' + str(k_labels_index))
         k_labels = find_k_labels(k_labels_index, train_labels)
         print('k_labels:' + str(k_labels))
@@ -193,11 +194,13 @@ if __name__ == '__main__':
             train_labels.append(0)
 
 
-
+    print('len di train_dataset = ' + str(len(train)))
+    print('len di train_dataset_labels = ' + str(len(train_labels)))
     for i in range(0, len(k_values)):
         knn_byhand(train, train_labels, test, test_true_labels, k_values[i])
 
-    #pickle.dump(train, open('train_dataset_efficient.p', 'wb'))
+    pickle.dump(train, open('train_dataset_efficient.p', 'wb'))
+    pickle.dump(train_labels, open('train_labels.p', 'wb'))
 
 # links : https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html ,
 #         https://pyimagesearch.com/2016/08/08/k-nn-classifier-for-image-classification/
