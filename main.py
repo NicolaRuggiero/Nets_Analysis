@@ -77,16 +77,16 @@ def knn_byhand(train_set, train_labels, test_set, test_true_labels, k):
     results = []
     for i in range(0, len(test_set)):
         d = distanceDataset(train_set, test_set[i])
-        #print('img : ' + str(i))
-        #print('distanze: ' + str(d))
+        # print('img : ' + str(i))
+        # print('distanze: ' + str(d))
         k_labels_index = np.argpartition(d, k)
         k_labels_index = k_labels_index[0:k]
-        #print('k_labels_index :' + str(k_labels_index))
+        # print('k_labels_index :' + str(k_labels_index))
         k_labels = find_k_labels(k_labels_index, train_labels)
-        #print('k_labels:' + str(k_labels))
+        # print('k_labels:' + str(k_labels))
         w = most_frequent(k_labels)
-        #print('w' + str(w))
-        #print('test_true_label ' + str(test_true_labels[i]))
+        # print('w' + str(w))
+        # print('test_true_label ' + str(test_true_labels[i]))
 
         if (w == test_true_labels[i]):
             results.append(1)
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     train = []
     train_labels = []
     test_true_labels = []
-    k_values = [2, 3, 5, 7, 10, 20, 50]
+    k_values = [2, 3, 5, 7, 10, 20, 50, 100 ,200]
     for filename in glob.glob('Test_images/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
@@ -138,73 +138,53 @@ if __name__ == '__main__':
         elif 'porcellino' in filename:
             test_true_labels.append(3)
 
+        elif 'paris_eiffel' in filename:
+            test_true_labels.append(4)
         else:
             test_true_labels.append(0)
 
-    """
-    for filename in glob.glob('testKNN/train/' + '*jpg'):
+    for filename in glob.glob('train_images/calco/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         train.append(img)
-        if 'partir' in filename:
-            test_true_labels.append(1)
+        train_labels.append(2)
 
-
-        elif 'autore' in filename:
-            train_labels.append(2)
-
-
-        elif 'porcellino' in filename:
-            train_labels.append(3)
-
-        else:
-            train_labels.append(0)
-
-
-    for filename in glob.glob('testKNN/train/' + '*jpg'):
-        img = Image.open(filename)
-        img = image_to_feature_vector(img)
-        train.append(img)
-        if 'partir' in filename:
-            test_true_labels.append(1)
-
-
-        elif 'autore' in filename:
-            train_labels.append(2)
-
-
-        elif 'porcellino' in filename:
-            train_labels.append(3)
-
-        else:
-            train_labels.append(0)
     print('Done Train,calco')
-    
-    for filename in glob.glob('testKNN/train/' + '*jpg'):
+
+    for filename in glob.glob('train_images/partir/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         train.append(img)
-        if 'partir' in filename:
-            test_true_labels.append(1)
+        train_labels.append(1)
 
+    print('Done Train,partir')
 
-        elif 'autore' in filename:
-            train_labels.append(2)
+    for filename in glob.glob('train_images/porcellino/' + '*jpg'):
+        img = Image.open(filename)
+        img = image_to_feature_vector(img)
+        train.append(img)
+        train_labels.append(3)
 
+    for filename in glob.glob('train_images/paris_eiffel/' + '*jpg'):
+        img = Image.open(filename)
+        img = image_to_feature_vector(img)
+        train.append(img)
+        train_labels.append(4)
 
-        elif 'porcellino' in filename:
-            train_labels.append(3)
+    print('Done Train,porcellino')
 
-        else:
-            train_labels.append(0)
-    """
-    train = pickle.load(open('train_dataset_efficient.p','rb'))
-    train_labels = pickle.load(open('train_labels.p', 'rb'))
+    # train = pickle.load(open('train_dataset_efficient.p','rb'))
+    # train_labels = pickle.load(open('train_labels.p', 'rb'))
     print('len di train_dataset = ' + str(len(train)))
     print('len di train_dataset_labels = ' + str(len(train_labels)))
+
+    print('knn by hand : ')
     for i in range(0, len(k_values)):
         knn_byhand(train, train_labels, test, test_true_labels, k_values[i])
 
+    print('knn scikit : ')
+    for i in range(0, len(k_values)):
+        knn(train, train_labels, test, test_true_labels, k_values[i])
     pickle.dump(train, open('train_dataset_efficient.p', 'wb'))
     pickle.dump(train_labels, open('train_labels.p', 'wb'))
 
