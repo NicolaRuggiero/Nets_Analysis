@@ -19,11 +19,26 @@ def V3LargePredict(img, IMAGE_SHAPE=(224, 224)):
     ])
     model.build([None, 224, 224, 3])
     img = img.resize(IMAGE_SHAPE)
-    img = np.array(img)/255
+    img = np.array(img) / 255
 
     result = model.predict(img[np.newaxis, ...])
 
-    # print('result :' + str(result))
+    # print('result :' + str(result.shape))
+    # print('modulo :' + str(np.linalg.norm(result)))
+    return result
+
+
+def efficientPredict(img, IMAGE_SHAPE=(224, 224)):
+    model = tf.keras.Sequential([
+        hub.KerasLayer("https://tfhub.dev/tensorflow/efficientnet/lite4/classification/2")
+    ])
+    model.build([None, 224, 224, 3])
+    img = img.resize(IMAGE_SHAPE)
+    img = np.array(img) / 255
+
+    result = model.predict(img[np.newaxis, ...])
+
+    # print('result :' + str(result.shape))
     # print('modulo :' + str(np.linalg.norm(result)))
     return result
 
@@ -31,10 +46,53 @@ def V3LargePredict(img, IMAGE_SHAPE=(224, 224)):
 def image_to_feature_vector(image):
     # resize the image to a fixed size, then flatten the image into
     # a list of raw pixel intensities
-    return V3LargePredict(image)
+    return efficientPredict(image)
 
 
-def KNN(train_set, train_labels, test_set, test_true_labels, k):
+def distanceDataset(train_set, arr):
+    results = []
+    for i in range(0, len(train_set)):
+        d = np.linalg.norm(arr - train_set[i])
+        results.append(d)
+    return results
+
+
+def find_k_labels(index, train_labels):
+    results = []
+    for i in range(0, len(index)):
+        results.append(train_labels[index[i]])
+    return results
+
+
+def most_frequent(List):
+    return max(set(List), key=List.count)
+
+
+def knn_byhand(train_set, train_labels, test_set, test_true_labels, k):
+    results = []
+    for i in range(0, len(test_set)):
+        d = distanceDataset(train_set, test_set[i])
+        print('img : ' + str(i))
+        print('distanze: ' + str(d))
+        k_labels_index = np.argpartition(d, k)
+        print('k_labels_index :' + str(k_labels_index))
+        k_labels = find_k_labels(k_labels_index, train_labels)
+        print('k_labels:' + str(k_labels))
+        w = most_frequent(k_labels)
+        print('w' + str(w))
+        print('test_true_label ' + str(test_true_labels[i]))
+
+        if (w == test_true_labels[i]):
+            results.append(1)
+        else:
+            results.append(0)
+
+    score = sum(results) / len(results)
+    print('mean accuracy per k = ' + str(k) + ' = ' + str(score))
+    return score
+
+
+def knn(train_set, train_labels, test_set, test_true_labels, k):
     classifier = KNeighborsClassifier(n_neighbors=k)
 
     train_set = np.array(train_set)
@@ -58,7 +116,7 @@ if __name__ == '__main__':
     train_labels = []
     test_true_labels = []
     k_values = [2, 3, 5, 7, 10, 20, 50]
-    for filename in glob.glob('Test_images/' + '*jpg'):
+    for filename in glob.glob('testKNN/test/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         test.append(img)
@@ -77,32 +135,71 @@ if __name__ == '__main__':
         else:
             test_true_labels.append(0)
 
-    for filename in glob.glob('train_images/partir/' + '*jpg'):
+    """
+    for filename in glob.glob('testKNN/train/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         train.append(img)
-        train_labels.append(1)
-    print('Done Train,partir')
+        if 'partir' in filename:
+            test_true_labels.append(1)
 
-    for filename in glob.glob('train_images/calco/' + '*jpg'):
+
+        elif 'autore' in filename:
+            train_labels.append(2)
+
+
+        elif 'porcellino' in filename:
+            train_labels.append(3)
+
+        else:
+            train_labels.append(0)
+
+
+    for filename in glob.glob('testKNN/train/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         train.append(img)
-        train_labels.append(2)
+        if 'partir' in filename:
+            test_true_labels.append(1)
+
+
+        elif 'autore' in filename:
+            train_labels.append(2)
+
+
+        elif 'porcellino' in filename:
+            train_labels.append(3)
+
+        else:
+            train_labels.append(0)
     print('Done Train,calco')
-
-    for filename in glob.glob('train_images/porcellino/' + '*jpg'):
+    """
+    for filename in glob.glob('testKNN/train/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         train.append(img)
-        train_labels.append(3)
+        if 'partir' in filename:
+            test_true_labels.append(1)
+
+
+        elif 'autore' in filename:
+            train_labels.append(2)
+
+
+        elif 'porcellino' in filename:
+            train_labels.append(3)
+
+        else:
+            train_labels.append(0)
+
+
 
     for i in range(0, len(k_values)):
-        KNN(train, train_labels, test, test_true_labels, k_values[i])
+        knn_byhand(train, train_labels, test, test_true_labels, k_values[i])
 
-    pickle.dump(open(train,'train_dataset.p','wb'))
+    #pickle.dump(train, open('train_dataset_efficient.p', 'wb'))
 
-    # links : https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html ,
-    #         https://pyimagesearch.com/2016/08/08/k-nn-classifier-for-image-classification/
-    # reti :  efficient ,https://tfhub.dev/tensorflow/efficientnet/lite4/classification/2
-    #         V3large, https://tfhub.dev/google/imagenet/mobilenet_v3_large_075_224/classification/5
+# links : https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html ,
+#         https://pyimagesearch.com/2016/08/08/k-nn-classifier-for-image-classification/
+# reti :  efficient ,https://tfhub.dev/tensorflow/efficientnet/lite4/classification/2
+#         V3large, https://tfhub.dev/google/imagenet/mobilenet_v3_large_075_224/classification/5
