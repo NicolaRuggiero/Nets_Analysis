@@ -35,6 +35,7 @@ def efficientPredict(img, IMAGE_SHAPE=(224, 224)):
         hub.KerasLayer("https://tfhub.dev/tensorflow/efficientnet/lite4/classification/2")
     ])
     model.build([None, 224, 224, 3])
+
     img = img.resize(IMAGE_SHAPE)
     img = np.array(img) / 255
 
@@ -164,14 +165,15 @@ if __name__ == '__main__':
         img = image_to_feature_vector(img)
         train.append(img)
         train_labels.append(3)
-
+    """
     for filename in glob.glob('train_images/paris_eiffel/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         train.append(img)
         train_labels.append(4)
-
+    
     print('Done Train,porcellino')
+    """
 
     # train = pickle.load(open('train_dataset_efficient.p','rb'))
     # train_labels = pickle.load(open('train_labels.p', 'rb'))
