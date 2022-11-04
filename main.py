@@ -122,45 +122,43 @@ if __name__ == '__main__':
     train = []
     train_labels = []
     test_true_labels = []
-    k_values = [2, 3, 5, 7, 10, 20, 50, 100 ,200]
-    for filename in glob.glob('Test_images/' + '*jpg'):
+    k_values = [2, 3, 5, 7, 10, 20, 50, 100, 200]
+    for filename in glob.glob('revisitop/paris/test/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         test.append(img)
 
-        if 'partir' in filename:
+        if 'eiffel' in filename:
             test_true_labels.append(1)
 
 
-        elif 'autore' in filename:
+        elif 'moulinrouge' in filename:
             test_true_labels.append(2)
 
 
-        elif 'porcellino' in filename:
+        elif 'triomphe' in filename:
             test_true_labels.append(3)
 
-        elif 'paris_eiffel' in filename:
-            test_true_labels.append(4)
         else:
             test_true_labels.append(0)
 
-    for filename in glob.glob('train_images/calco/' + '*jpg'):
-        img = Image.open(filename)
-        img = image_to_feature_vector(img)
-        train.append(img)
-        train_labels.append(2)
-
-    print('Done Train,calco')
-
-    for filename in glob.glob('train_images/partir/' + '*jpg'):
+    for filename in glob.glob('revisitop/paris/train/eiffel/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         train.append(img)
         train_labels.append(1)
 
+    print('Done Train,calco')
+
+    for filename in glob.glob('revisitop/paris/train/moulinrouge/' + '*jpg'):
+        img = Image.open(filename)
+        img = image_to_feature_vector(img)
+        train.append(img)
+        train_labels.append(2)
+
     print('Done Train,partir')
 
-    for filename in glob.glob('train_images/porcellino/' + '*jpg'):
+    for filename in glob.glob('revisitop/paris/train/triomphe/' + '*jpg'):
         img = Image.open(filename)
         img = image_to_feature_vector(img)
         train.append(img)
